@@ -1,0 +1,4 @@
+.vscode/
+.tox
+__pycache__
+file.lock
