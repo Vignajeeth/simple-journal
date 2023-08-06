@@ -4,3 +4,4 @@ __pycache__
 file.lock
 .pytest_cache
 journal.db
+.coverage

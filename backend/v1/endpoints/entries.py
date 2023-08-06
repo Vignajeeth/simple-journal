@@ -52,3 +52,21 @@ def read_entry(entry_id: int, db: Session = Depends(get_db)):
     if db_entry is None:
         raise HTTPException(status_code=404, detail="Entry not found")
     return db_entry
+
+
+@router.put("/{entry_id}", response_model=journal.Entry)
+def update_entry(
+    new_entry: journal.EntryBase, entry_id: int, db: Session = Depends(get_db)
+):
+    response = crud.update_entry(db=db, new_entry=new_entry, entry_id=entry_id)
+    if not response:
+        raise HTTPException(status_code=404, detail="Entry not found")
+    return response
+
+
+@router.delete("/{entry_id}")
+def delete_entry(entry_id: int, db: Session = Depends(get_db)):
+    response = crud.delete_entry(db=db, entry_id=entry_id)
+    if not response:
+        raise HTTPException(status_code=404, detail="Entry not found")
+    return response
