@@ -42,7 +42,6 @@ def update_entry(db: Session, new_entry: EntryBase, entry_id: int):
 
 def delete_entry(db: Session, entry_id: int):
     db_entry = db.query(EntryTable).filter(EntryTable.id == entry_id).first()
-    print(db_entry)
     if db_entry is None:
         return None
 
