@@ -1,12 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { EntryBase } from "./EntryBase";
 
 function App() {
-  let today = new Date().toISOString().slice(0, 10);
-  const [text, setText] = useState("");
-  const [mood, setMood] = useState(4);
-  const [date, setDate] = useState(today);
+  const [entries, setEntries] = useState<EntryBase[]>([]);
+  const [defaultEntry, setDefaultEntry] = useState<EntryBase>({
+    entry_content: "",
+    mood: 4,
+    entry_date: new Date(),
+  });
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    fetchEntries();
+  }, []);
+
+  const fetchEntries = async () => {
+    const fetchedEntries = await fetch("http://localhost:8000/entries/");
+    const journalEntries = await fetchedEntries.json();
+
+    setEntries(journalEntries);
+  };
 
   let handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,49 +32,71 @@ function App() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          entry_date: date,
-          mood: mood,
-          entry_content: text,
+          entry_date: defaultEntry.entry_date,
+          mood: Number(defaultEntry.mood),
+          entry_content: defaultEntry.entry_content,
         }),
       });
-      let resJson = await res.json();
+      // let resJson = await res.json();
+      // console.log(resJson.body);
       if (res.status === 200) {
-        setText("");
-        setMood(4);
-        setDate(today);
+        setDefaultEntry({
+          entry_content: "",
+          mood: 4,
+          entry_date: new Date(),
+        });
         setMessage("Entry saved successfully");
       } else {
-        setMessage("Error occured");
+        setMessage("Entry failed");
       }
     } catch (err) {
       console.log(err);
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDefaultEntry({
+      ...defaultEntry,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
-    <div className="App">
+    <div>
       <form onSubmit={handleSubmit}>
         <input
           type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          name="entry_date"
+          value={defaultEntry.entry_date.toString()}
+          onChange={handleInputChange}
         />
         <input
           type="text"
-          value={text}
+          name="entry_content"
+          value={defaultEntry.entry_content}
           placeholder="Content"
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleInputChange}
         />
         <input
           type="number"
-          value={mood}
-          onChange={(e) => setMood(Number(e.target.value))}
+          name="mood"
+          value={defaultEntry.mood}
+          onChange={handleInputChange}
         />
 
         <button type="submit">Create</button>
+        <option>asas</option>
 
         <div className="message">{message ? <p>{message}</p> : null}</div>
       </form>
+      <ul>
+        {entries.map((entry) => (
+          <li key={entry.entry_date.toString()}>
+            <strong>{entry.entry_content}</strong>
+            <p>Mood: {entry.mood}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
