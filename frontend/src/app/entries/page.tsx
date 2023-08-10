@@ -4,11 +4,13 @@ import { useState } from "react";
 import { EntryBase } from "./EntryBase";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 function App() {
   /**
    * Attributes
    */
+  const router = useRouter();
   const [message, setMessage] = useState<string>("");
   const searchParams = useSearchParams();
   const dateId: string = searchParams.get("id") || "20200101";
@@ -29,6 +31,7 @@ function App() {
   /**
    * Methods
    */
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,6 +51,9 @@ function App() {
       if (res.ok) {
         setEntry(defaultEntry);
         setMessage("Entry saved successfully");
+        await sleep(1000); // Pause for a second so you see success message.
+
+        router.push(`/entries/${dateId}`);
       } else {
         setMessage("Entry failed");
       }
