@@ -1,13 +1,17 @@
 "use client";
+
 import { useState } from "react";
 import { EntryBase } from "./EntryBase";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 function App() {
-  const [message, setMessage] = useState("");
+  /**
+   * Attributes
+   */
+  const [message, setMessage] = useState<string>("");
   const searchParams = useSearchParams();
-  const dateId = searchParams.get("id");
+  const dateId: string = searchParams.get("id") || "20200101";
   const selectedDate =
     dateId.substring(0, 4) +
     "-" +
@@ -15,17 +19,21 @@ function App() {
     "-" +
     dateId.substring(6);
 
-  const defaultEntry = {
+  const defaultEntry: EntryBase = {
     entry_content: "",
     mood: 4,
     entry_date: new Date(selectedDate),
   };
   const [entry, setEntry] = useState<EntryBase>(defaultEntry);
 
-  let handleSubmit = async (e) => {
+  /**
+   * Methods
+   */
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      let res = await fetch("http://localhost:8000/entries/", {
+      const res = await fetch("http://localhost:8000/entries/", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -37,20 +45,14 @@ function App() {
           entry_content: entry.entry_content,
         }),
       });
-      // let resJson = await res.json();
-      // console.log(resJson.body());
-      if (res.status === 200) {
-        setEntry({
-          entry_content: "",
-          mood: 4,
-          entry_date: new Date(),
-        });
+      if (res.ok) {
+        setEntry(defaultEntry);
         setMessage("Entry saved successfully");
       } else {
         setMessage("Entry failed");
       }
     } catch (err) {
-      console.log(err);
+      console.error("Error creating entry:", err);
     }
   };
 
@@ -61,13 +63,15 @@ function App() {
     });
   };
 
-  function handleReset() {
+  const handleReset = () => {
     setEntry({
       ...defaultEntry,
-      entry_date: defaultEntry.entry_date, // Set the date to the default value
     });
-  }
+  };
 
+  /**
+   * Component
+   */
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -103,7 +107,7 @@ function App() {
             <p>Go to Home!</p>
           </Link>
         </div>
-        <div className="message">{message ? <p>{message}</p> : null}</div>
+        <div className="message">{message && <p>{message}</p>}</div>
       </form>
     </div>
   );
