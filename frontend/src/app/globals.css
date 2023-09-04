@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@layer components {}
+
+.react-calendar__navigation {
+  display: flex;
+  
+  .react-calendar__navigation__label {
+    font-weight: bold;
+  }
+
+  .react-calendar__navigation__arrow {
+    flex-grow: 0.333;
+  }
+}
+
+/* .react-calender__viewContainer{
+
+} */
+
+/* 
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -24,4 +44,4 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
-}
+} */
