@@ -31,7 +31,9 @@ const IndexPage = () => {
   const fetchEntries = async () => {
     // TODO: Fetch only the required entries and not all
     try {
-      const fetchedEntries = await fetch("http://localhost:8000/entries/");
+      const fetchedEntries = await fetch(
+        "http://" + process.env.hostname + ":8000/entries/"
+      );
       const journalEntries = await fetchedEntries.json();
       setEntriesThisMonth(journalEntries);
     } catch (error) {
@@ -43,10 +45,13 @@ const IndexPage = () => {
    * Style the calendar only in month view
    */
 
-  const filledDates: { number: number } = entriesThisMonth.reduce((acc, cv) => {
-    acc[new Date(cv.entry_date).setHours(0, 0, 0, 0)] = cv.mood;
-    return acc;
-  }, {});
+  const filledDates: { [index: number]: number } = entriesThisMonth.reduce(
+    (acc: { [index: number]: number }, cv) => {
+      acc[new Date(cv.entry_date).setHours(0, 0, 0, 0)] = cv.mood;
+      return acc;
+    },
+    {}
+  );
 
   function tileClassName({ date, view }: { date: string; view: string }) {
     let returnval =

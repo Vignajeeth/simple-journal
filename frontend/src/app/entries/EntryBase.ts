@@ -1,4 +1,4 @@
-enum Mood {
+export enum Mood {
     HORRIBLE = 1, BAD, IRRITATED, NORMAL, CONTENT, GOOD, AMAZING 
   }
 

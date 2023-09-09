@@ -21,7 +21,9 @@ const EntryPage: React.FC<EntryPageProps> = ({ params }) => {
 
   const getEntry = async () => {
     try {
-      const resp = await fetch(`http://localhost:8000/entries/${id}`);
+      const resp = await fetch(
+        `http://` + process.env.hostname + `:8000/entries/${id}`
+      );
       const entry = await resp.json();
       setThisEntry(entry);
     } catch (error) {
@@ -35,12 +37,15 @@ const EntryPage: React.FC<EntryPageProps> = ({ params }) => {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/entries/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://` + process.env.hostname + `:8000/entries/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         router.push("/");
@@ -59,18 +64,33 @@ const EntryPage: React.FC<EntryPageProps> = ({ params }) => {
   const date = new Date(thisEntry.entry_date);
 
   return (
-    <>
-      <span>Date: {date.toDateString()}</span>
-      <span>Mood: {thisEntry.mood}</span>
-      <div>{thisEntry.entry_content}</div>
-      <div>
-        <button onClick={handleDelete}>Delete</button>
-        <button onClick={handleEdit}>Edit</button>
-        <Link href="/">
-          <p>Go to Home!</p>
-        </Link>
+    <div className="bg-gray-900 text-gray-100 px-8 py-10 shadow-lg min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-center">Entry Details</h1>
+      <div className="bg-gray-800 rounded-md p-8 mx-auto max-w-md">
+        <span className="block mb-4 text-gray-100">
+          Date: {date.toDateString()}
+        </span>
+        <span className="block mb-4 text-gray-100">Mood: {thisEntry.mood}</span>
+        <div className="mb-6 text-gray-100">{thisEntry.entry_content}</div>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={handleDelete}
+            className="bg-red-600 text-gray-100 px-4 py-2 rounded-md"
+          >
+            Delete
+          </button>
+          <button
+            onClick={handleEdit}
+            className="bg-green-600 text-gray-100 px-4 py-2 rounded-md"
+          >
+            Edit
+          </button>
+          <Link href="/">
+            <p className="text-blue-600 cursor-pointer">Go to Home!</p>
+          </Link>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

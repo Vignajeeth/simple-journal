@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { EntryBase } from "./EntryBase";
+import { EntryBase, Mood } from "./EntryBase";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -31,16 +31,16 @@ function App() {
 
   const defaultEntry: EntryBase = {
     entry_content: "",
-    mood: 4,
+    mood: Mood.NORMAL,
     entry_date: new Date(selectedDate),
   };
   const [entry, setEntry] = useState<EntryBase>(defaultEntry);
 
   const [templates, setTemplates] = useState<Template[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [selectedTemplates, setSelectedTemplates] = useState([]);
-  const [selectedQuestions, setSelectedQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
+  const [selectedTemplates, setSelectedTemplates] = useState<number[]>([]);
+  const [selectedQuestions, setSelectedQuestions] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<{ [index: number]: string }>({});
 
   useEffect(() => {
     setTemplates([
@@ -57,7 +57,7 @@ function App() {
     ]);
   }, []);
 
-  const handleTemplateChange = (templateId) => {
+  const handleTemplateChange = (templateId: number) => {
     setSelectedTemplates((prevSelected) => {
       if (prevSelected.includes(templateId)) {
         return prevSelected.filter((id) => id !== templateId);
@@ -81,7 +81,7 @@ function App() {
     // console.log(questions);
   };
 
-  const handleAnswerChange = (questionId, answer) => {
+  const handleAnswerChange = (questionId: number, answer: string) => {
     setAnswers({
       ...answers,
       [questionId]: answer,
@@ -91,25 +91,24 @@ function App() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const combinedEntryContent = selectedQuestions
-      .map(
-        (question) =>
-          `<question>${question.text}</question>${answers[question.id] || ""}`
-      )
+      .map((question) => ` ${question.text} ${answers[question.id] || ""}`)
       .join(" ");
-
     try {
-      const res = await fetch("http://localhost:8000/entries/", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          entry_date: entry.entry_date,
-          mood: Number(entry.mood),
-          entry_content: combinedEntryContent,
-        }),
-      });
+      const res = await fetch(
+        "http://" + process.env.hostname + ":8000/entries/",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            entry_date: entry.entry_date,
+            mood: Number(entry.mood),
+            entry_content: combinedEntryContent,
+          }),
+        }
+      );
 
       if (res.ok) {
         setEntry(defaultEntry);
@@ -129,70 +128,114 @@ function App() {
     });
   };
 
+  const handleMoodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = parseInt(event.target.value, 10);
+    setEntry({
+      ...entry,
+      mood: selectedValue,
+    });
+  };
+
   const handleReset = () => {
     setEntry({
       ...defaultEntry,
     });
     setSelectedTemplates([]);
-    setQuestions([]);
+    setSelectedQuestions([]);
     setAnswers({});
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <input
-            type="date"
-            name="entry_date"
-            value={selectedDate}
-            onChange={handleInputChange}
-          />
-          <input
-            type="number"
-            name="mood"
-            value={entry.mood}
-            onChange={handleInputChange}
-          />
-        </div>
+    <div className="bg-gray-900 text-gray-100 px-8 py-10 shadow-lg min-h-screen">
+      <div className="bg-gray-800 rounded-md p-8 mx-auto max-w-md">
+        <h1 className="text-3xl font-bold mb-6 text-center">Entry Form</h1>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <input
+              type="date"
+              name="entry_date"
+              value={selectedDate}
+              onChange={handleInputChange}
+              className="w-full bg-gray-800 text-gray-100 px-4 py-2 rounded-md"
+            />
 
-        <div>
-          <label>Select Templates:</label>
-          {templates.map((template) => (
-            <div key={template.id}>
+            <select
+              className="w-full bg-gray-800 text-gray-100 px-4 py-2 mt-2 rounded-md"
+              value={entry.mood}
+              onChange={handleMoodChange}
+            >
+              {Object.values(Mood)
+                .slice(7)
+                .map((key) => (
+                  <option key={key} value={key}>
+                    {Mood[key]}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="block mb-2 text-gray-100">
+              Select Templates:
+            </label>
+
+            <div className="flex space-x-4">
+              {templates.map((template) => (
+                <button
+                  key={template.id}
+                  type="button"
+                  className={`p-2  rounded-md ${
+                    selectedTemplates.includes(template.id)
+                      ? "bg-blue-600"
+                      : "bg-gray-800"
+                  }`}
+                  onClick={() => handleTemplateChange(template.id)}
+                >
+                  <span className="text-gray-100">{template.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {selectedQuestions.map((question) => (
+            <div key={question.id} className="mb-4">
+              <label className="block mb-2 text-gray-100">
+                {question.text}
+              </label>
               <input
-                type="checkbox"
-                name={`template-${template.id}`}
-                checked={selectedTemplates.includes(template.id)}
-                onChange={() => handleTemplateChange(template.id)}
+                type="text"
+                value={answers[question.id] || ""}
+                onChange={(e) =>
+                  handleAnswerChange(question.id, e.target.value)
+                }
+                className="w-full bg-gray-800 text-gray-100 px-4 py-2 rounded-md"
               />
-              <label>{template.name}</label>
             </div>
           ))}
-        </div>
 
-        {selectedQuestions.map((question) => (
-          <div key={question.id}>
-            <label>{question.text}</label>
-            <input
-              type="text"
-              value={answers[question.id] || ""}
-              onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-            />
+          <div className="flex items-center space-x-4">
+            <button
+              type="submit"
+              className="bg-green-600 text-gray-100 px-4 py-2 rounded-md"
+            >
+              Create
+            </button>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="bg-red-600 text-gray-100 px-4 py-2 rounded-md"
+            >
+              Reset
+            </button>
+            <Link href="/">
+              <p className="text-blue-600 cursor-pointer">Go to Home!</p>
+            </Link>
           </div>
-        ))}
-
-        <div>
-          <button type="submit">Create</button>
-          <button type="button" onClick={handleReset}>
-            Reset
-          </button>
-          <Link href="/">
-            <p>Go to Home!</p>
-          </Link>
-        </div>
-        <div className="message">{message && <p>{message}</p>}</div>
-      </form>
+          <div className="message mt-4">
+            {message && <p className="text-red-600">{message}</p>}
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
