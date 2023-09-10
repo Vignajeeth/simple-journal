@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Entry } from "./Entry";
+import { Mood } from "../EntryBase";
 import Link from "next/link";
 
 interface EntryPageProps {
@@ -64,25 +65,21 @@ const EntryPage: React.FC<EntryPageProps> = ({ params }) => {
   const date = new Date(thisEntry.entry_date);
 
   return (
-    <div className="bg-gray-900 text-gray-100 px-8 py-10 shadow-lg min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center">Entry Details</h1>
-      <div className="bg-gray-800 rounded-md p-8 mx-auto max-w-md">
-        <span className="block mb-4 text-gray-100">
-          Date: {date.toDateString()}
+    <div className="common-bg">
+      <h1 className="header1">Entry Details</h1>
+      <div className="style-form">
+        <span className="block text-gray-100 text-center text-xl pb-5">
+          {date.toDateString()}
         </span>
-        <span className="block mb-4 text-gray-100">Mood: {thisEntry.mood}</span>
+        <span className="block text-gray-100 text-center text-xl pb-5">
+          {Mood[thisEntry.mood]}
+        </span>
         <div className="mb-6 text-gray-100">{thisEntry.entry_content}</div>
         <div className="flex items-center space-x-4">
-          <button
-            onClick={handleDelete}
-            className="bg-red-600 text-gray-100 px-4 py-2 rounded-md"
-          >
+          <button onClick={handleDelete} className="bg-red-600 btn">
             Delete
           </button>
-          <button
-            onClick={handleEdit}
-            className="bg-green-600 text-gray-100 px-4 py-2 rounded-md"
-          >
+          <button onClick={handleEdit} className="bg-green-600 btn">
             Edit
           </button>
           <Link href="/">

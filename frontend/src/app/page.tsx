@@ -115,7 +115,7 @@ const IndexPage = () => {
   let calenderClassName = calenderCardClassName + calenderCardTextClassName;
   return (
     <div className="bg-gray-900 text-gray-100 px-64 py-10 shadow-lg min-h-screen ">
-      <h1 className="text-3xl font-bold mb-6 text-center"> Journal </h1>
+      <h1 className="header1"> Journal </h1>
       <Calendar
         className={calenderClassName}
         onChange={setSelectedDate}

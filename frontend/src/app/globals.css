@@ -2,12 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
-
-@layer components {}
+@layer components {
+  .btn {
+    @apply text-gray-100 px-4 py-2 rounded-md;
+  }
+  .common-bg {
+    @apply bg-gray-900 text-gray-100 px-8 py-10 shadow-lg min-h-screen;
+  }
+  .style-form {
+    @apply bg-gray-800 rounded-md p-8 mx-auto max-w-4xl;
+  }
+  .header1 {
+    @apply text-3xl font-bold mb-6 text-center;
+  }
+  .textarea1 {
+    @apply w-full bg-gray-800 btn ring-1 ring-gray-600;
+  }
+}
 
 .react-calendar__navigation {
   display: flex;
-  
+
   .react-calendar__navigation__label {
     font-weight: bold;
   }

@@ -64,42 +64,55 @@ const EditEntryPage = ({ params }: { params: { entryId: string } }) => {
       [e.target.name]: e.target.value,
     });
   };
+
+  const handleMoodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = parseInt(event.target.value, 10);
+    setEntry({
+      ...entry,
+      mood: selectedValue,
+    });
+  };
+
   const date = new Date(entry.entry_date);
 
   return (
-    <div className="bg-gray-900 text-gray-100 px-8 py-10 shadow-lg min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center">Edit Entry</h1>
-      <div className="bg-gray-800 rounded-md p-8 mx-auto max-w-md">
+    <div className="common-bg">
+      <h1 className="header1">Edit Entry</h1>
+      <div className="style-form">
         <div className="mb-4">
-          <label className="block text-gray-100">
-            Date: {date.toISOString().substring(0, 10)}
+          <label className="block text-gray-100 text-center text-xl pb-5">
+            {date.toDateString()}
           </label>
         </div>
         <div className="mb-4">
-          <label className="block text-gray-100">Mood:</label>
-          <input
-            type="number"
-            name="mood"
+          <select
+            className="textarea1 mt-2 "
             value={entry.mood}
-            onChange={handleInputChange}
-            className="w-full bg-gray-800 text-gray-100 px-4 py-2 rounded-md"
-          />
+            onChange={handleMoodChange}
+          >
+            {Object.values(Mood)
+              .slice(7)
+              .map((key) => (
+                <option key={key} value={key}>
+                  {Mood[key]}
+                </option>
+              ))}
+          </select>
         </div>
         <div className="mb-4">
-          <label className="block text-gray-100">Content:</label>
-          <input
-            type="text"
+          <textarea
+            type=""
             name="entry_content"
             value={entry.entry_content}
             onChange={handleInputChange}
-            className="w-full bg-gray-800 text-gray-100 px-4 py-2 rounded-md"
+            placeholder="Entry Content"
+            spellCheck="true"
+            rows={9}
+            className="textarea1 "
           />
         </div>
         <div className="flex items-center space-x-4">
-          <button
-            onClick={handleUpdate}
-            className="bg-green-600 text-gray-100 px-4 py-2 rounded-md"
-          >
+          <button onClick={handleUpdate} className="bg-green-600 btn">
             Update
           </button>
           <Link href={`/entries/${id}`}>

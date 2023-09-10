@@ -146,9 +146,9 @@ function App() {
   };
 
   return (
-    <div className="bg-gray-900 text-gray-100 px-8 py-10 shadow-lg min-h-screen">
-      <div className="bg-gray-800 rounded-md p-8 mx-auto max-w-md">
-        <h1 className="text-3xl font-bold mb-6 text-center">Entry Form</h1>
+    <div className="common-bg">
+      <div className="style-form">
+        <h1 className="header1">Entry Form</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <input
@@ -156,11 +156,11 @@ function App() {
               name="entry_date"
               value={selectedDate}
               onChange={handleInputChange}
-              className="w-full bg-gray-800 text-gray-100 px-4 py-2 rounded-md"
+              className="textarea1"
             />
 
             <select
-              className="w-full bg-gray-800 text-gray-100 px-4 py-2 mt-2 rounded-md"
+              className=" textarea1 mt-2 "
               value={entry.mood}
               onChange={handleMoodChange}
             >
@@ -208,22 +208,19 @@ function App() {
                 onChange={(e) =>
                   handleAnswerChange(question.id, e.target.value)
                 }
-                className="w-full bg-gray-800 text-gray-100 px-4 py-2 rounded-md"
+                className="textarea1"
               />
             </div>
           ))}
 
           <div className="flex items-center space-x-4">
-            <button
-              type="submit"
-              className="bg-green-600 text-gray-100 px-4 py-2 rounded-md"
-            >
+            <button type="submit" className="bg-green-600 btn">
               Create
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="bg-red-600 text-gray-100 px-4 py-2 rounded-md"
+              className="bg-red-600 btn"
             >
               Reset
             </button>
