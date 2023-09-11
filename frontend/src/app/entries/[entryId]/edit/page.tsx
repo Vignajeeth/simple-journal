@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { EntryBase, Mood } from "../../EntryBase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -31,7 +31,8 @@ const EditEntryPage = ({ params }: { params: { entryId: string } }) => {
     fetchEntry();
   }, [id]);
 
-  const handleUpdate = async () => {
+  const handleUpdate = async (e: FormEvent) => {
+    e.preventDefault();
     try {
       const response = await fetch(
         `http://` + process.env.hostname + `:8000/entries/${id}`,
@@ -40,11 +41,7 @@ const EditEntryPage = ({ params }: { params: { entryId: string } }) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            entry_date: entry.entry_date,
-            mood: Number(entry.mood),
-            entry_content: entry.entry_content,
-          }),
+          body: JSON.stringify(entry),
         }
       );
 
@@ -58,67 +55,66 @@ const EditEntryPage = ({ params }: { params: { entryId: string } }) => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setEntry({
       ...entry,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleMoodChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = parseInt(event.target.value, 10);
+  const handleMoodChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = parseInt(e.target.value, 10);
     setEntry({
       ...entry,
       mood: selectedValue,
     });
   };
 
-  const date = new Date(entry.entry_date);
+  const formattedDate = new Date(entry.entry_date).toDateString();
 
   return (
     <div className="common-bg">
       <h1 className="header1">Edit Entry</h1>
       <div className="style-form">
-        <div className="mb-4">
-          <label className="block text-gray-100 text-center text-xl pb-5">
-            {date.toDateString()}
-          </label>
-        </div>
-        <div className="mb-4">
-          <select
-            className="textarea1 mt-2 "
-            value={entry.mood}
-            onChange={handleMoodChange}
-          >
-            {Object.values(Mood)
-              .slice(7)
-              .map((key) => (
-                <option key={key} value={key}>
-                  {Mood[key]}
-                </option>
-              ))}
-          </select>
-        </div>
-        <div className="mb-4">
-          <textarea
-            type=""
-            name="entry_content"
-            value={entry.entry_content}
-            onChange={handleInputChange}
-            placeholder="Entry Content"
-            spellCheck="true"
-            rows={9}
-            className="textarea1 "
-          />
-        </div>
-        <div className="flex items-center space-x-4">
-          <button onClick={handleUpdate} className="bg-green-600 btn">
-            Update
-          </button>
-          <Link href={`/entries/${id}`}>
-            <p className="text-red-600 cursor-pointer">Cancel</p>
-          </Link>
-        </div>
+        <form onSubmit={handleUpdate}>
+          <div className="mb-4">
+            <label className="block text-gray-100 text-center text-xl pb-5">
+              {formattedDate}
+            </label>
+            <select
+              className="textarea1 mt-2"
+              value={entry.mood}
+              onChange={handleMoodChange}
+            >
+              {Object.values(Mood)
+                .slice(7)
+                .map((key: any) => (
+                  <option key={key} value={key}>
+                    {Mood[key]}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <textarea
+              name="entry_content"
+              value={entry.entry_content}
+              onChange={handleInputChange}
+              placeholder="Entry Content"
+              spellCheck={true}
+              rows={9}
+              className="textarea1"
+            />
+          </div>
+          <div className="flex items-center space-x-4">
+            <button type="submit" className="bg-green-600 btn">
+              Update
+            </button>
+            <Link href={`/entries/${id}`}>
+              <p className="text-red-600 cursor-pointer">Cancel</p>
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );

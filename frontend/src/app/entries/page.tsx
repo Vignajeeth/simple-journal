@@ -147,18 +147,13 @@ function App() {
 
   return (
     <div className="common-bg">
+      <h1 className="header1">Create Entry</h1>
       <div className="style-form">
-        <h1 className="header1">Entry Form</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <input
-              type="date"
-              name="entry_date"
-              value={selectedDate}
-              onChange={handleInputChange}
-              className="textarea1"
-            />
-
+            <label className="block text-gray-100 text-center text-xl pb-5">
+              {new Date(selectedDate).toDateString()}
+            </label>
             <select
               className=" textarea1 mt-2 "
               value={entry.mood}
@@ -166,20 +161,18 @@ function App() {
             >
               {Object.values(Mood)
                 .slice(7)
-                .map((key) => (
+                .map((key: any) => (
                   <option key={key} value={key}>
                     {Mood[key]}
                   </option>
                 ))}
             </select>
           </div>
-
           <div className="mb-4">
-            <label className="block mb-2 text-gray-100">
+            <label className="block mb-4 text-gray-100">
               Select Templates:
             </label>
-
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 mb-8 ">
               {templates.map((template) => (
                 <button
                   key={template.id}
@@ -202,12 +195,15 @@ function App() {
               <label className="block mb-2 text-gray-100">
                 {question.text}
               </label>
-              <input
-                type="text"
+              <textarea
+                name="entry_content"
                 value={answers[question.id] || ""}
                 onChange={(e) =>
                   handleAnswerChange(question.id, e.target.value)
                 }
+                placeholder="Answer"
+                spellCheck={true}
+                rows={3}
                 className="textarea1"
               />
             </div>

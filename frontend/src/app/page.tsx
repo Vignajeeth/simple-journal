@@ -17,7 +17,7 @@ const IndexPage = () => {
    * Journal Entries written this month to style calendar.
    */
   const router = useRouter();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<any>(new Date());
   const [entriesThisMonth, setEntriesThisMonth] = useState<EntryBase[]>([]);
 
   /**
@@ -53,7 +53,7 @@ const IndexPage = () => {
     {}
   );
 
-  function tileClassName({ date, view }: { date: string; view: string }) {
+  function tileClassName({ date, view }: { date: Date; view: string }) {
     let returnval =
       "font-medium text-base mx-0 my-0 px-0 py-4 dark:hover:bg-gray-950";
     let processedDate = new Date(date).setHours(0, 0, 0, 0);
