@@ -6,22 +6,16 @@ A simple journal to log days and track moods!
 
 ### Installation
 
-1. Clone the repository:
+```sh
+# 1. Clone the repository:
+git clone https://github.com/Vignajeeth/simple-journal.git
 
-   ```sh
-   git clone https://github.com/Vignajeeth/simple-journal.git
-   ```
+# 2. Navigate to the project directory:
+cd simple-journal
 
-2. Navigate to the project directory:
-
-   ```sh
-   cd simple-journal
-   ```
-
-3. Start the development server:
-   ```sh
-   docker compose up --build
-   ```
+# 3. Start the development server:
+docker compose up --build
+```
 
 ## Usage
 
